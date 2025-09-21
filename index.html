@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蜜糖心情 | 给你甜甜的鼓励</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 配置Tailwind自定义颜色和字体
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF9BB3',
+                        secondary: '#C9A0DC',
+                        accent: '#A0E7E5',
+                        light: '#FFF5F8',
+                        dark: '#6A5D7B'
+                    },
+                    fontFamily: {
+                        cute: ['"Comic Sans MS"', '"Marker Felt"', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .float {
+                animation: float 3s ease-in-out infinite;
+            }
+            .float-delay-1 {
+                animation: float 3s ease-in-out 0.5s infinite;
+            }
+            .float-delay-2 {
+                animation: float 3s ease-in-out 1s infinite;
+            }
+            .bounce-slow {
+                animation: bounce 3s infinite;
+            }
+            .heart-beat {
+                animation: heartBeat 1.5s infinite;
+            }
+            .bg-gradient-sweet {
+                background: linear-gradient(135deg, #FFF5F8 0%, #FFE6F0 100%);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .modal-backdrop {
+                backdrop-filter: blur(5px);
+            }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+            50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+        }
+        
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-sweet min-h-screen font-cute text-dark overflow-x-hidden">
+    <!-- 导航栏 -->
+    <nav class="fixed w-full bg-white/80 backdrop-blur-md shadow-sm z-50 transition-all duration-300 py-2" id="navbar">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-heart text-primary text-2xl heart-beat"></i>
+                <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">蜜糖心情</h1>
+            </div>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#home" class="hover:text-primary transition-colors duration-300 page-link" data-page="home">首页</a>
+                <a href="#encouragements" class="hover:text-primary transition-colors duration-300 page-link" data-page="encouragements">鼓励语</a>
+                <a href="#activities" class="hover:text-primary transition-colors duration-300 page-link" data-page="activities">小活动</a>
+                <a href="#journal" class="hover:text-primary transition-colors duration-300 page-link" data-page="journal">心情日记</a>
+                <div id="user-menu-container" class="relative">
+                    <button id="user-menu-btn" class="flex items-center space-x-1 hover:text-primary transition-colors duration-300 hidden">
+                        <i class="fa fa-user-circle-o text-xl"></i>
+                        <span id="username-display"></span>
+                        <i class="fa fa-caret-down text-xs"></i>
+                    </button>
+                    <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden z-50">
+                        <a href="#profile" class="block px-4 py-2 hover:bg-light transition-colors duration-200 page-link" data-page="profile">
+                            <i class="fa fa-user mr-2"></i>个人资料
+                        </a>
+                        <a href="#" id="logout-btn" class="block px-4 py-2 hover:bg-light transition-colors duration-200">
+                            <i class="fa fa-sign-out mr-2"></i>退出登录
+                        </a>
+                    </div>
+                    <button id="login-btn" class="hover:text-primary transition-colors duration-300">
+                        <i class="fa fa-sign-in mr-1"></i>登录/注册
+                    </button>
+                </div>
+            </div>
+            <button class="md:hidden text-xl" id="menu-toggle">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white shadow-md absolute w-full" id="mobile-menu">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#home" class="py-2 hover:text-primary transition-colors duration-300 page-link" data-page="home">首页</a>
+                <a href="#encouragements" class="py-2 hover:text-primary transition-colors duration-300 page-link" data-page="encouragements">鼓励语</a>
+                <a href="#activities" class="py-2 hover:text-primary transition-colors duration-300 page-link" data-page="activities">小活动</a>
+                <a href="#journal" class="py-2 hover:text-primary transition-colors duration-300 page-link" data-page="journal">心情日记</a>
+                <a href="#profile" class="py-2 hover:text-primary transition-colors duration-300 page-link hidden" data-page="profile" id="mobile-profile-link">
+                    <i class="fa fa-user mr-1"></i>个人资料
+                </a>
+                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                    <span id="mobile-username" class="hidden"></span>
+                    <button id="mobile-login-btn" class="text-primary hover:text-primary/80 transition-colors duration-300">
+                        <i class="fa fa-sign-in mr-1"></i>登录/注册
+                    </button>
+                    <button id="mobile-logout-btn" class="text-gray-500 hover:text-red-500 transition-colors duration-300 hidden">
+                        <i class="fa fa-sign-out mr-1"></i>退出
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 登录/注册模态框 -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/50 modal-backdrop flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-transform duration-300 scale-95">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-center flex-1">
+                    <span id="modal-title">登录</span>
+                </h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- 登录表单 -->
+            <div id="login-form" class="p-6">
+                <div class="mb-4">
+                    <label for="login-username" class="block mb-2 font-medium">用户名</label>
+                    <input type="text" id="login-username" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请输入用户名">
+                </div>
+                <div class="mb-6">
+                    <label for="login-password" class="block mb-2 font-medium">密码</label>
+                    <input type="password" id="login-password" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请输入密码">
+                </div>
+                <button id="submit-login" class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 mb-4">
+                    登录 <i class="fa fa-sign-in ml-1"></i>
+                </button>
+                <div class="text-center">
+                    <p>还没有账号？ <a href="#" id="switch-to-register" class="text-primary hover:underline">立即注册</a></p>
+                </div>
+            </div>
+            
+            <!-- 注册表单 -->
+            <div id="register-form" class="p-6 hidden">
+                <div class="mb-4">
+                    <label for="register-username" class="block mb-2 font-medium">用户名</label>
+                    <input type="text" id="register-username" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请设置用户名">
+                </div>
+                <div class="mb-4">
+                    <label for="register-email" class="block mb-2 font-medium">邮箱</label>
+                    <input type="email" id="register-email" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请输入邮箱">
+                </div>
+                <div class="mb-4">
+                    <label for="register-password" class="block mb-2 font-medium">密码</label>
+                    <input type="password" id="register-password" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请设置密码（至少6位）">
+                </div>
+                <div class="mb-6">
+                    <label for="register-confirm" class="block mb-2 font-medium">确认密码</label>
+                    <input type="password" id="register-confirm" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请再次输入密码">
+                </div>
+                <button id="submit-register" class="w-full bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 mb-4">
+                    注册 <i class="fa fa-user-plus ml-1"></i>
+                </button>
+                <div class="text-center">
+                    <p>已有账号？ <a href="#" id="switch-to-login" class="text-secondary hover:underline">立即登录</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 个人资料区域 -->
+    <section id="profile" class="py-20 px-4 bg-white/50 hidden">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-shadow">
+                我的<span class="bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">个人资料</span>
+            </h2>
+            
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <div class="flex flex-col md:flex-row items-center mb-8">
+                    <div class="w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center mb-4 md:mb-0">
+                        <i class="fa fa-user-circle-o text-5xl text-primary"></i>
+                    </div>
+                    <div class="text-center md:text-left md:ml-6">
+                        <h3 class="text-2xl font-bold" id="profile-username"></h3>
+                        <p class="text-gray-500" id="profile-email"></p>
+                        <p class="text-sm text-gray-400 mt-1">注册时间: <span id="profile-join-date"></span></p>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-100 pt-6">
+                    <h4 class="text-xl font-bold mb-4">账号信息</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="profile-new-username" class="block mb-2 font-medium">用户名</label>
+                            <input type="text" id="profile-new-username" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        <div>
+                            <label for="profile-new-email" class="block mb-2 font-medium">邮箱</label>
+                            <input type="email" id="profile-new-email" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h4 class="text-xl font-bold mb-4">修改密码</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="profile-old-password" class="block mb-2 font-medium">当前密码</label>
+                                <input type="password" id="profile-old-password" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请输入当前密码">
+                            </div>
+                            <div>
+                                <label for="profile-new-password" class="block mb-2 font-medium">新密码</label>
+                                <input type="password" id="profile-new-password" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="请设置新密码">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 text-right">
+                        <button id="save-profile" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                            保存修改 <i class="fa fa-save ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-10 bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <h3 class="text-2xl font-bold mb-6">我的数据统计</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-6 bg-primary/10 rounded-xl">
+                        <div class="text-primary text-4xl mb-2">
+                            <i class="fa fa-book"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-1">日记总数</h4>
+                        <p class="text-2xl font-bold" id="stats-journals">0</p>
+                    </div>
+                    
+                    <div class="p-6 bg-secondary/10 rounded-xl">
+                        <div class="text-secondary text-4xl mb-2">
+                            <i class="fa fa-heart"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-1">感恩记录</h4>
+                        <p class="text-2xl font-bold" id="stats-gratitudes">0</p>
+                    </div>
+                    
+                    <div class="p-6 bg-accent/10 rounded-xl">
+                        <div class="text-accent text-4xl mb-2">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <h4 class="font-bold text-lg mb-1">连续记录</h4>
+                        <p class="text-2xl font-bold" id="stats-streak">0</p>
+                        <p class="text-sm text-gray-500">天</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- 主视觉区域 - 全屏显示版本 -->
+<section id="home" class="relative overflow-hidden min-h-screen flex items-center justify-center px-4">
+    <div class="container mx-auto text-center relative z-10 pt-16">
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 text-shadow leading-tight">
+            你今天也做得<span class="text-primary">很棒</span>哦！
+        </h1>
+        <p class="text-xl md:text-2xl mb-12 max-w-2xl mx-auto text-gray-600">
+            每个人都有不开心的时候，没关系，在这里喘口气，
+            接收一点甜甜的鼓励，然后继续勇敢地走下去吧！
+        </p>
+        <button id="get-encouragement" class="bg-primary hover:bg-primary/90 text-white font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-lg">
+            给我一句鼓励 <i class="fa fa-arrow-right ml-2"></i>
+        </button>
+        
+        <!-- 鼓励语显示区域 -->
+        <div id="encouragement-display" class="mt-10 p-6 rounded-2xl bg-white/80 backdrop-blur-sm shadow-md max-w-2xl mx-auto hidden transform transition-all duration-500 scale-95 opacity-0">
+            <p id="encouragement-text" class="text-xl md:text-2xl italic"></p>
+        </div>
+        
+
+    </div>
+    
+    <!-- 装饰元素 -->
+    <div class="absolute top-20 left-10 w-16 h-16 bg-accent/30 rounded-full float hidden md:block"></div>
+    <div class="absolute bottom-20 right-10 w-20 h-20 bg-secondary/30 rounded-full float-delay-1 hidden md:block"></div>
+    <div class="absolute top-1/2 left-1/4 w-12 h-12 bg-primary/30 rounded-full float-delay-2 hidden md:block"></div>
+    <div class="absolute -z-10 top-0 left-0 w-full h-full overflow-hidden">
+        <i class="fa fa-heart text-primary/10 absolute top-[10%] left-[5%] text-4xl float"></i>
+        <i class="fa fa-star text-secondary/10 absolute top-[20%] right-[10%] text-3xl float-delay-1"></i>
+        <i class="fa fa-smile-o text-accent/10 absolute bottom-[30%] left-[15%] text-4xl float-delay-2"></i>
+        <i class="fa fa-heart text-primary/10 absolute bottom-[20%] right-[20%] text-5xl float"></i>
+        <i class="fa fa-star text-secondary/10 absolute top-[40%] left-[25%] text-3xl float-delay-1"></i>
+    </div>
+</section>
+
+
+    <!-- 鼓励语卡片区域 -->
+    <section id="encouragements" class="pt-24 pb-16 px-4 bg-white/50">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-shadow">
+                甜甜的<span class="bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">鼓励卡片</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 卡片1 -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover border-t-4 border-primary">
+                    <div class="text-primary text-3xl mb-4">
+                        <i class="fa fa-lightbulb-o"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">你有独特的光芒</h3>
+                    <p class="text-gray-600">
+                        不要因为别人的光芒而否定自己，你也有属于自己的独特光彩，只是有时需要一点时间去发现。
+                    </p>
+                    <button class="mt-4 text-primary hover:text-primary/80 font-medium transition-colors duration-300 copy-btn" data-text="不要因为别人的光芒而否定自己，你也有属于自己的独特光彩，只是有时需要一点时间去发现。">
+                        <i class="fa fa-copy mr-1"></i> 复制这句话
+                    </button>
+                </div>
+                
+                <!-- 卡片2 -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover border-t-4 border-secondary">
+                    <div class="text-secondary text-3xl mb-4">
+                        <i class="fa fa-heart"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">对自己温柔一点</h3>
+                    <p class="text-gray-600">
+                        你已经很努力了，偶尔的失误和疲惫都是正常的。给自己多一点耐心和温柔，就像你对待重要的人一样。
+                    </p>
+                    <button class="mt-4 text-secondary hover:text-secondary/80 font-medium transition-colors duration-300 copy-btn" data-text="你已经很努力了，偶尔的失误和疲惫都是正常的。给自己多一点耐心和温柔，就像你对待重要的人一样。">
+                        <i class="fa fa-copy mr-1"></i> 复制这句话
+                    </button>
+                </div>
+                
+                <!-- 卡片3 -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover border-t-4 border-accent">
+                    <div class="text-accent text-3xl mb-4">
+                        <i class="fa fa-trophy"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">小进步也值得庆祝</h3>
+                    <p class="text-gray-600">
+                        不必追求完美，每一个小小的进步都值得被看见和庆祝。生活就是由这些点点滴滴的美好组成的。
+                    </p>
+                    <button class="mt-4 text-accent hover:text-accent/80 font-medium transition-colors duration-300 copy-btn" data-text="不必追求完美，每一个小小的进步都值得被看见和庆祝。生活就是由这些点点滴滴的美好组成的。">
+                        <i class="fa fa-copy mr-1"></i> 复制这句话
+                    </button>
+                </div>
+                
+                <!-- 卡片4 -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover border-t-4 border-primary">
+                    <div class="text-primary text-3xl mb-4">
+                        <i class="fa fa-cloud"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">雨天总会过去</h3>
+                    <p class="text-gray-600">
+                        即使现在心情像被乌云笼罩，也要相信阳光总会再次照耀。每一场雨都会让天空变得更清澈。
+                    </p>
+                    <button class="mt-4 text-primary hover:text-primary/80 font-medium transition-colors duration-300 copy-btn" data-text="即使现在心情像被乌云笼罩，也要相信阳光总会再次照耀。每一场雨都会让天空变得更清澈。">
+                        <i class="fa fa-copy mr-1"></i> 复制这句话
+                    </button>
+                </div>
+                
+                <!-- 卡片5 -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover border-t-4 border-secondary">
+                    <div class="text-secondary text-3xl mb-4">
+                        <i class="fa fa-hand-peace-o"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">允许自己休息</h3>
+                    <p class="text-gray-600">
+                        休息不是懒惰，而是为了更好地前进。就像手机需要充电一样，你的身心也需要适当的休息和放松。
+                    </p>
+                    <button class="mt-4 text-secondary hover:text-secondary/80 font-medium transition-colors duration-300 copy-btn" data-text="休息不是懒惰，而是为了更好地前进。就像手机需要充电一样，你的身心也需要适当的休息和放松。">
+                        <i class="fa fa-copy mr-1"></i> 复制这句话
+                    </button>
+                </div>
+                
+                <!-- 卡片6 -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 card-hover border-t-4 border-accent">
+                    <div class="text-accent text-3xl mb-4">
+                        <i class="fa fa-magic"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">你比想象中强大</h3>
+                    <p class="text-gray-600">
+                        回头看看，你已经克服了那么多困难。你比自己想象中更坚强、更有韧性，相信自己，你能做到！
+                    </p>
+                    <button class="mt-4 text-accent hover:text-accent/80 font-medium transition-colors duration-300 copy-btn" data-text="回头看看，你已经克服了那么多困难。你比自己想象中更坚强、更有韧性，相信自己，你能做到！">
+                        <i class="fa fa-copy mr-1"></i> 复制这句话
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center mt-10">
+                <button id="more-encouragements" class="border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-2 px-6 rounded-full transition-all duration-300">
+                    加载更多鼓励 <i class="fa fa-refresh ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 互动小活动区域 -->
+    <section id="activities" class="pt-24 pb-16 px-4 bg-gradient-to-b from-white/50 to-light">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-shadow">
+                让心情变甜的<span class="bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">小活动</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- 活动1：呼吸练习 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-primary/10 flex items-center justify-center">
+                        <div id="breathing-circle" class="w-24 h-24 rounded-full bg-primary/30 flex items-center justify-center text-primary">
+                            <span id="breath-text">开始</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 flex items-center">
+                            <i class="fa fa-leaf text-primary mr-2"></i> 深呼吸练习
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            跟着动画深呼吸，帮助你放松身心，缓解压力。点击圆形开始。
+                        </p>
+                        <button id="start-breathing" class="text-primary hover:text-primary/80 font-medium transition-colors duration-300">
+                            <i class="fa fa-play mr-1"></i> 开始练习
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 活动2：心情颜色 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div class="h-48 bg-gradient-to-r from-primary/20 to-secondary/20 flex items-center justify-center">
+                        <div id="mood-color" class="w-32 h-32 rounded-full bg-white shadow-md flex items-center justify-center">
+                            <span class="text-sm text-center">选择一种颜色</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 flex items-center">
+                            <i class="fa fa-paint-brush text-secondary mr-2"></i> 心情颜色
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            选择一种能代表你现在心情的颜色，看看它能带给你什么鼓励。
+                        </p>
+                        <div class="flex space-x-3">
+                            <button class="w-8 h-8 rounded-full bg-primary mood-color-btn" data-color="#FF9BB3" data-text="温暖的粉色：你现在需要一点温柔的关怀，对自己好一点吧！"></button>
+                            <button class="w-8 h-8 rounded-full bg-secondary mood-color-btn" data-color="#C9A0DC" data-text="梦幻的紫色：你的想象力很丰富，试着把烦恼变成创意吧！"></button>
+                            <button class="w-8 h-8 rounded-full bg-accent mood-color-btn" data-color="#A0E7E5" data-text="清新的青色：你需要一点平静，深呼吸，一切都会好起来的。"></button>
+                            <button class="w-8 h-8 rounded-full bg-yellow-300 mood-color-btn" data-color="#FDE68A" data-text="阳光的黄色：你的笑容很有感染力，记得多给自己一些积极的暗示。"></button>
+                            <button class="w-8 h-8 rounded-full bg-blue-300 mood-color-btn" data-color="#93C5FD" data-text="宁静的蓝色：你很有智慧，相信自己的判断，你能处理好眼前的事情。"></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 活动3：感恩小事 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div id="gratitude-list-container" class="h-48 bg-accent/10 flex items-center justify-center p-6">
+                        <div id="gratitude-list" class="w-full">
+                            <ul class="text-left space-y-2 max-w-xs mx-auto">
+                                <li class="flex items-center opacity-0 transform translate-y-2 transition-all duration-500"><i class="fa fa-check-circle text-accent mr-2"></i> <span>阳光很好</span></li>
+                                <li class="flex items-center opacity-0 transform translate-y-2 transition-all duration-500 delay-100"><i class="fa fa-check-circle text-accent mr-2"></i> <span>喝到了喜欢的饮料</span></li>
+                                <li class="flex items-center opacity-0 transform translate-y-2 transition-all duration-500 delay-200"><i class="fa fa-check-circle text-accent mr-2"></i> <span>听到了一首好听的歌</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 flex items-center">
+                            <i class="fa fa-star text-accent mr-2"></i> 感恩小事
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            记录下今天值得感恩的小事，让生活中的美好被看见。
+                        </p>
+                        <div class="flex">
+                            <input type="text" id="gratitude-input" placeholder="今天我感谢..." class="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-accent">
+                            <button id="add-gratitude" class="bg-accent hover:bg-accent/90 text-white px-4 rounded-r-lg transition-colors duration-300">
+                                <i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                        <p id="gratitude-login-prompt" class="text-sm text-primary mt-2 hidden">
+                            <i class="fa fa-info-circle mr-1"></i> 登录后可保存你的感恩记录
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 活动4：心情贴纸 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <div id="sticker-board" class="h-48 bg-light relative p-4">
+                        <div class="absolute top-4 left-4 text-sm text-gray-400">
+                            点击下方贴纸添加到这里
+                        </div>
+                        <div id="sticker-login-prompt" class="absolute inset-0 flex items-center justify-center bg-white/70 hidden">
+                            <p class="text-primary"><i class="fa fa-lock mr-1"></i> 登录后可保存你的心情贴纸板</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 flex items-center">
+                            <i class="fa fa-sticky-note text-primary mr-2"></i> 心情贴纸板
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            选择贴纸来表达你现在的心情，创建属于自己的心情板。
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="sticker-btn p-2 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors duration-300" data-html='<i class="fa fa-smile-o text-2xl text-primary"></i>'>
+                                <i class="fa fa-smile-o text-xl text-primary"></i>
+                            </button>
+                            <button class="sticker-btn p-2 bg-secondary/10 rounded-lg hover:bg-secondary/20 transition-colors duration-300" data-html='<i class="fa fa-heart text-2xl text-secondary"></i>'>
+                                <i class="fa fa-heart text-xl text-secondary"></i>
+                            </button>
+                            <button class="sticker-btn p-2 bg-accent/10 rounded-lg hover:bg-accent/20 transition-colors duration-300" data-html='<i class="fa fa-star text-2xl text-accent"></i>'>
+                                <i class="fa fa-star text-xl text-accent"></i>
+                            </button>
+                            <button class="sticker-btn p-2 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition-colors duration-300" data-html='<i class="fa fa-sun-o text-2xl text-yellow-500"></i>'>
+                                <i class="fa fa-sun-o text-xl text-yellow-500"></i>
+                            </button>
+                            <button class="sticker-btn p-2 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-300" data-html='<i class="fa fa-cloud text-2xl text-blue-400"></i>'>
+                                <i class="fa fa-cloud text-xl text-blue-400"></i>
+                            </button>
+                            <button class="sticker-btn p-2 bg-green-100 rounded-lg hover:bg-green-200 transition-colors duration-300" data-html='<i class="fa fa-leaf text-2xl text-green-500"></i>'>
+                                <i class="fa fa-leaf text-xl text-green-500"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 心情日记区域 -->
+    <section id="journal" class="pt-24 pb-16 px-4 bg-white/50">
+        <div class="container mx-auto max-w-4xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-shadow">
+                我的<span class="bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">心情日记</span>
+            </h2>
+            
+            <div id="journal-login-prompt" class="bg-white rounded-2xl shadow-lg p-8 text-center hidden">
+                <div class="text-primary text-5xl mb-4">
+                    <i class="fa fa-lock"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">登录后即可使用日记功能</h3>
+                <p class="text-gray-600 mb-6">登录后可以保存你的心情记录，追踪自己的情绪变化</p>
+                <button id="prompt-login-btn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300">
+                    立即登录 <i class="fa fa-sign-in ml-2"></i>
+                </button>
+            </div>
+            
+            <div id="journal-form-container" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold mb-4 md:mb-0">记录今天的心情</h3>
+                    <div class="text-gray-500">
+                        <span id="current-date"></span>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block mb-2 font-medium">今天的心情如何？</label>
+                    <div class="flex space-x-2 mb-4">
+                        <button class="mood-rating p-3 bg-red-100 hover:bg-red-200 rounded-full transition-colors duration-300" data-rating="1">
+                            <i class="fa fa-frown-o text-red-500"></i>
+                        </button>
+                        <button class="mood-rating p-3 bg-orange-100 hover:bg-orange-200 rounded-full transition-colors duration-300" data-rating="2">
+                            <i class="fa fa-meh-o text-orange-500"></i>
+                        </button>
+                        <button class="mood-rating p-3 bg-yellow-100 hover:bg-yellow-200 rounded-full transition-colors duration-300" data-rating="3">
+                            <i class="fa fa-meh-o text-yellow-500"></i>
+                        </button>
+                        <button class="mood-rating p-3 bg-green-100 hover:bg-green-200 rounded-full transition-colors duration-300" data-rating="4">
+                            <i class="fa fa-smile-o text-green-500"></i>
+                        </button>
+                        <button class="mood-rating p-3 bg-blue-100 hover:bg-blue-200 rounded-full transition-colors duration-300" data-rating="5">
+                            <i class="fa fa-grin-alt text-blue-500"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="journal-entry" class="block mb-2 font-medium">今天发生了什么？有什么想记录的？</label>
+                    <textarea id="journal-entry" rows="6" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary resize-none" placeholder="今天我感到... 发生了... 我学到了..."></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="gratitude-item" class="block mb-2 font-medium">今天最感恩的一件事</label>
+                    <input type="text" id="gratitude-item" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="今天我最感恩的是...">
+                </div>
+                
+                <div class="text-right">
+                    <button id="save-journal" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                        保存日记 <i class="fa fa-save ml-2"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 日记列表 -->
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold mb-6 text-center">我的过往记录</h3>
+                <div id="journal-entries" class="space-y-4">
+                    <!-- 日记条目会通过JS动态添加 -->
+                    <div class="text-center text-gray-500 py-10 bg-white/50 rounded-xl">
+                        登录后可以查看和管理你的心情日记
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-10 px-4">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-6 md:mb-0">
+                    <i class="fa fa-heart text-primary text-2xl heart-beat"></i>
+                    <h2 class="text-xl font-bold">蜜糖心情</h2>
+                </div>
+                
+                <div class="flex space-x-6 mb-6 md:mb-0">
+                    <a href="#" class="hover:text-primary transition-colors duration-300"><i class="fa fa-weibo text-xl"></i></a>
+                    <a href="#" class="hover:text-primary transition-colors duration-300"><i class="fa fa-wechat text-xl"></i></a>
+                    <a href="#" class="hover:text-primary transition-colors duration-300"><i class="fa fa-instagram text-xl"></i></a>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <p>愿你每天都有甜甜的心情</p>
+                    <p class="text-sm text-gray-400 mt-1">© 2023 蜜糖心情 版权所有</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知提示框 -->
+    <div id="notification" class="fixed bottom-6 right-6 bg-dark text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
+        <i class="fa fa-check-circle mr-2"></i>
+        <span id="notification-text"></span>
+    </div>
+
+    <script>
+        // 全局状态管理
+        const appState = {
+            currentUser: null,
+            currentPage: 'home',
+            init() {
+                // 从本地存储加载用户状态
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    this.currentUser = JSON.parse(savedUser);
+                }
+                this.updateUI();
+                this.showPage('home'); // 默认显示首页
+            },
+            setUser(user) {
+                this.currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                this.updateUI();
+            },
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('currentUser');
+                this.updateUI();
+                this.showPage('home'); // 退出后返回首页
+            },
+            isLoggedIn() {
+                return !!this.currentUser;
+            },
+            showPage(pageId) {
+                // 隐藏所有页面
+                document.querySelectorAll('section[id]').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                
+                // 显示目标页面
+                const targetPage = document.getElementById(pageId);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    this.currentPage = pageId;
+                    
+                    // 滚动到页面顶部
+                    window.scrollTo({
+                        top: targetPage.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                // 更新导航链接状态
+                document.querySelectorAll('.page-link').forEach(link => {
+                    if (link.getAttribute('data-page') === pageId) {
+                        link.classList.add('text-primary');
+                    } else {
+                        link.classList.remove('text-primary');
+                    }
+                });
+                
+                // 隐藏移动菜单
+                mobileMenu.classList.add('hidden');
+            },
+            updateUI() {
+                // 更新导航栏显示
+                const loginBtn = document.getElementById('login-btn');
+                const userMenuBtn = document.getElementById('user-menu-btn');
+                const usernameDisplay = document.getElementById('username-display');
+                const mobileLoginBtn = document.getElementById('mobile-login-btn');
+                const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+                const mobileUsername = document.getElementById('mobile-username');
+                const mobileProfileLink = document.getElementById('mobile-profile-link');
+                
+                // 更新日记区域显示
+                const journalLoginPrompt = document.getElementById('journal-login-prompt');
+                const journalFormContainer = document.getElementById('journal-form-container');
+                
+                // 更新感恩和贴纸区域提示
+                const gratitudeLoginPrompt = document.getElementById('gratitude-login-prompt');
+                const stickerLoginPrompt = document.getElementById('sticker-login-prompt');
+                
+                if (this.isLoggedIn()) {
+                    // 用户已登录
+                    loginBtn.classList.add('hidden');
+                    userMenuBtn.classList.remove('hidden');
+                    usernameDisplay.textContent = this.currentUser.username;
+                    
+                    mobileLoginBtn.classList.add('hidden');
+                    mobileLogoutBtn.classList.remove('hidden');
+                    mobileUsername.classList.remove('hidden');
+                    mobileUsername.textContent = `你好，${this.currentUser.username}`;
+                    mobileProfileLink.classList.remove('hidden');
+                    
+                    // 显示日记表单
+                    journalLoginPrompt.classList.add('hidden');
+                    journalFormContainer.classList.remove('hidden');
+                    
+                    // 显示登录提示
+                    gratitudeLoginPrompt.classList.remove('hidden');
+                    stickerLoginPrompt.classList.add('hidden');
+                    
+                    // 加载用户数据
+                    renderJournalEntries();
+                    loadUserGratitudes();
+                    loadUserStickers();
+                    updateProfileView();
+                    updateStats();
+                } else {
+                    // 用户未登录
+                    loginBtn.classList.remove('hidden');
+                    userMenuBtn.classList.add('hidden');
+                    
+                    mobileLoginBtn.classList.remove('hidden');
+                    mobileLogoutBtn.classList.add('hidden');
+                    mobileUsername.classList.add('hidden');
+                    mobileProfileLink.classList.add('hidden');
+                    
+                    // 显示登录提示
+                    journalLoginPrompt.classList.remove('hidden');
+                    journalFormContainer.classList.add('hidden');
+                    
+                    gratitudeLoginPrompt.classList.add('hidden');
+                    stickerLoginPrompt.classList.remove('hidden');
+                    
+                    // 清空用户相关内容
+                    document.getElementById('journal-entries').innerHTML = `
+                        <div class="text-center text-gray-500 py-10 bg-white/50 rounded-xl">
+                            登录后可以查看和管理你的心情日记
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // 用户数据管理
+        const userData = {
+            // 获取用户数据存储键
+            getUserKey(userId, dataType) {
+                return `user_${userId}_${dataType}`;
+            },
+            
+            // 保存用户日记
+            saveJournal(journal) {
+                if (!appState.isLoggedIn()) return false;
+                
+                const key = this.getUserKey(appState.currentUser.id, 'journals');
+                const journals = JSON.parse(localStorage.getItem(key) || '[]');
+                journals.push(journal);
+                localStorage.setItem(key, JSON.stringify(journals));
+                return true;
+            },
+            
+            // 获取用户日记
+            getJournals() {
+                if (!appState.isLoggedIn()) return [];
+                
+                const key = this.getUserKey(appState.currentUser.id, 'journals');
+                return JSON.parse(localStorage.getItem(key) || '[]');
+            },
+            
+            // 删除用户日记
+            deleteJournal(journalId) {
+                if (!appState.isLoggedIn()) return false;
+                
+                const key = this.getUserKey(appState.currentUser.id, 'journals');
+                let journals = JSON.parse(localStorage.getItem(key) || '[]');
+                journals = journals.filter(journal => journal.id !== journalId);
+                localStorage.setItem(key, JSON.stringify(journals));
+                return true;
+            },
+            
+            // 保存用户感恩记录
+            saveGratitude(gratitude) {
+                if (!appState.isLoggedIn()) return false;
+                
+                const key = this.getUserKey(appState.currentUser.id, 'gratitudes');
+                const gratitudes = JSON.parse(localStorage.getItem(key) || '[]');
+                gratitudes.push({
+                    id: Date.now(),
+                    text: gratitude,
+                    date: new Date().toISOString()
+                });
+                localStorage.setItem(key, JSON.stringify(gratitudes));
+                return true;
+            },
+            
+            // 获取用户感恩记录
+            getGratitudes() {
+                if (!appState.isLoggedIn()) return [];
+                
+                const key = this.getUserKey(appState.currentUser.id, 'gratitudes');
+                return JSON.parse(localStorage.getItem(key) || '[]');
+            },
+            
+            // 保存用户贴纸
+            saveStickers(stickers) {
+                if (!appState.isLoggedIn()) return false;
+                
+                const key = this.getUserKey(appState.currentUser.id, 'stickers');
+                localStorage.setItem(key, JSON.stringify(stickers));
+                return true;
+            },
+            
+            // 获取用户贴纸
+            getStickers() {
+                if (!appState.isLoggedIn()) return [];
+                
+                const key = this.getUserKey(appState.currentUser.id, 'stickers');
+                return JSON.parse(localStorage.getItem(key) || '[]');
+            },
+            
+            // 更新用户信息
+            updateUser(userData) {
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const userIndex = users.findIndex(u => u.id === appState.currentUser.id);
+                
+                if (userIndex !== -1) {
+                    // 更新用户数据
+                    users[userIndex] = {
+                        ...users[userIndex],
+                        ...userData
+                    };
+                    
+                    localStorage.setItem('users', JSON.stringify(users));
+                    appState.setUser(users[userIndex]);
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        // 鼓励语句库
+        const encouragements = [
+            "你今天真的很棒，即使只是完成了一些小事。",
+            "别忘了，你比自己想象中更坚强。",
+            "休息不是放弃，而是为了更好地前进。",
+            "你的努力可能没有立刻看到成果，但它们都在积累。",
+            "对自己温柔一点，你已经很努力了。",
+            "每一个微小的进步都值得庆祝。",
+            "你不必完美，做自己就好。",
+            "今天的你，已经比昨天更棒了。",
+            "相信自己，你有能力克服眼前的困难。",
+            "你的存在本身就是有价值的。",
+            "即使步伐缓慢，只要在前进就好。",
+            "给自己一点时间和空间，一切都会好起来的。",
+            "你值得被爱，包括被自己爱。",
+            "不要因为暂时的黑暗，就忘记曾经见过的光明。",
+            "你的笑容很有感染力，记得多微笑哦。"
+        ];
+
+        // DOM元素
+        const getEncouragementBtn = document.getElementById('get-encouragement');
+        const encouragementDisplay = document.getElementById('encouragement-display');
+        const encouragementText = document.getElementById('encouragement-text');
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navbar = document.getElementById('navbar');
+        const copyBtns = document.querySelectorAll('.copy-btn');
+        const moreEncouragementsBtn = document.getElementById('more-encouragements');
+        const startBreathingBtn = document.getElementById('start-breathing');
+        const breathingCircle = document.getElementById('breathing-circle');
+        const breathText = document.getElementById('breath-text');
+        const moodColorBtns = document.querySelectorAll('.mood-color-btn');
+        const moodColor = document.getElementById('mood-color');
+        const addGratitudeBtn = document.getElementById('add-gratitude');
+        const gratitudeInput = document.getElementById('gratitude-input');
+        const gratitudeList = document.getElementById('gratitude-list');
+        const stickerBtns = document.querySelectorAll('.sticker-btn');
+        const stickerBoard = document.getElementById('sticker-board');
+        const saveJournalBtn = document.getElementById('save-journal');
+        const journalEntry = document.getElementById('journal-entry');
+        const gratitudeItem = document.getElementById('gratitude-item');
+        const journalEntries = document.getElementById('journal-entries');
+        const currentDateEl = document.getElementById('current-date');
+        const moodRatings = document.querySelectorAll('.mood-rating');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        
+        // 登录相关元素
+        const authModal = document.getElementById('auth-modal');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const modalTitle = document.getElementById('modal-title');
+        const closeModalBtn = document.getElementById('close-modal');
+        const switchToRegisterBtn = document.getElementById('switch-to-register');
+        const switchToLoginBtn = document.getElementById('switch-to-login');
+        const submitLoginBtn = document.getElementById('submit-login');
+        const submitRegisterBtn = document.getElementById('submit-register');
+        const loginUsernameInput = document.getElementById('login-username');
+        const loginPasswordInput = document.getElementById('login-password');
+        const registerUsernameInput = document.getElementById('register-username');
+        const registerEmailInput = document.getElementById('register-email');
+        const registerPasswordInput = document.getElementById('register-password');
+        const registerConfirmInput = document.getElementById('register-confirm');
+        const loginBtn = document.getElementById('login-btn');
+        const mobileLoginBtn = document.getElementById('mobile-login-btn');
+        const promptLoginBtn = document.getElementById('prompt-login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+        const userMenuBtn = document.getElementById('user-menu-btn');
+        const userDropdown = document.getElementById('user-dropdown');
+        const mobileProfileLink = document.getElementById('mobile-profile-link');
+        
+        // 个人资料元素
+        const profileSection = document.getElementById('profile');
+        const profileUsername = document.getElementById('profile-username');
+        const profileEmail = document.getElementById('profile-email');
+        const profileJoinDate = document.getElementById('profile-join-date');
+        const profileNewUsername = document.getElementById('profile-new-username');
+        const profileNewEmail = document.getElementById('profile-new-email');
+        const profileOldPassword = document.getElementById('profile-old-password');
+        const profileNewPassword = document.getElementById('profile-new-password');
+        const saveProfileBtn = document.getElementById('save-profile');
+        
+        // 数据统计元素
+        const statsJournals = document.getElementById('stats-journals');
+        const statsGratitudes = document.getElementById('stats-gratitudes');
+        const statsStreak = document.getElementById('stats-streak');
+
+        // 初始化日期显示
+        const today = new Date();
+        currentDateEl.textContent = today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'shadow');
+                navbar.classList.remove('py-3');
+            } else {
+                navbar.classList.add('py-3');
+                navbar.classList.remove('py-2', 'shadow');
+            }
+        });
+
+        // 移动端菜单切换
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 页面导航逻辑
+        document.querySelectorAll('.page-link').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const pageId = this.getAttribute('data-page');
+                
+                // 如果点击的是个人资料且未登录，显示登录模态框
+                if (pageId === 'profile' && !appState.isLoggedIn()) {
+                    openAuthModal('login');
+                    return;
+                }
+                
+                // 显示目标页面
+                appState.showPage(pageId);
+            });
+        });
+
+        // 随机获取鼓励语
+        getEncouragementBtn.addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * encouragements.length);
+            encouragementText.textContent = `"${encouragements[randomIndex]}"`;
+            
+            // 显示动画
+            encouragementDisplay.classList.remove('hidden');
+            setTimeout(() => {
+                encouragementDisplay.classList.remove('scale-95', 'opacity-0');
+                encouragementDisplay.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            // // 滚动到显示区域
+            // encouragementDisplay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        // 复制鼓励语
+        copyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.getAttribute('data-text');
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification('鼓励语已复制到剪贴板！');
+                });
+            });
+        });
+
+        // 加载更多鼓励语
+        moreEncouragementsBtn.addEventListener('click', () => {
+            // 模拟加载中状态
+            moreEncouragementsBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i> 加载中...';
+            moreEncouragementsBtn.disabled = true;
+            
+            // 模拟网络请求延迟
+            setTimeout(() => {
+                // 随机选择3条鼓励语添加到卡片列表
+                const cardsContainer = document.querySelector('#encouragements .grid');
+                const colors = ['primary', 'secondary', 'accent'];
+                const icons = ['fa-heart', 'fa-star', 'fa-lightbulb-o', 'fa-smile-o', 'fa-magic'];
+                
+                for (let i = 0; i < 3; i++) {
+                    const randomEncIndex = Math.floor(Math.random() * encouragements.length);
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                    
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-2xl shadow-lg p-6 card-hover border-t-4';
+                    card.classList.add(`border-${randomColor}`);
+                    
+                    card.innerHTML = `
+                        <div class="text-${randomColor} text-3xl mb-4">
+                            <i class="fa ${randomIcon}"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">${getRandomTitle()}</h3>
+                        <p class="text-gray-600">
+                            ${encouragements[randomEncIndex]}
+                        </p>
+                        <button class="mt-4 text-${randomColor} hover:text-${randomColor}/80 font-medium transition-colors duration-300 copy-btn" data-text="${encouragements[randomEncIndex]}">
+                            <i class="fa fa-copy mr-1"></i> 复制这句话
+                        </button>
+                    `;
+                    
+                    // 添加到容器并添加动画
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    cardsContainer.appendChild(card);
+                    
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.5s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100 * i);
+                    
+                    // 为新添加的复制按钮绑定事件
+                    const newCopyBtn = card.querySelector('.copy-btn');
+                    newCopyBtn.addEventListener('click', () => {
+                        const text = newCopyBtn.getAttribute('data-text');
+                        navigator.clipboard.writeText(text).then(() => {
+                            showNotification('鼓励语已复制到剪贴板！');
+                        });
+                    });
+                }
+                
+                // 恢复按钮状态
+                moreEncouragementsBtn.innerHTML = '加载更多鼓励 <i class="fa fa-refresh ml-1"></i>';
+                moreEncouragementsBtn.disabled = false;
+                
+                showNotification('已加载更多鼓励语！');
+            }, 1500);
+        });
+
+        // 深呼吸练习
+        let breathingActive = false;
+        let breathingInterval;
+        
+        startBreathingBtn.addEventListener('click', () => {
+            if (breathingActive) {
+                // 停止呼吸练习
+                clearInterval(breathingInterval);
+                breathingCircle.style.transition = 'all 0.5s ease';
+                breathingCircle.style.width = '24px';
+                breathingCircle.style.height = '24px';
+                breathText.textContent = '开始';
+                startBreathingBtn.innerHTML = '<i class="fa fa-play mr-1"></i> 开始练习';
+                breathingActive = false;
+            } else {
+                // 开始呼吸练习
+                breathingActive = true;
+                startBreathingBtn.innerHTML = '<i class="fa fa-stop mr-1"></i> 停止练习';
+                
+                let phase = 0; // 0: 吸气, 1: 屏息, 2: 呼气, 3: 屏息
+                
+                breathingInterval = setInterval(() => {
+                    switch(phase) {
+                        case 0: // 吸气
+                            breathingCircle.style.transition = 'all 4s ease-in-out';
+                            breathingCircle.style.width = '48px';
+                            breathingCircle.style.height = '48px';
+                            breathText.textContent = '吸气';
+                            phase = 1;
+                            break;
+                        case 1: // 屏息
+                            breathText.textContent = '屏息';
+                            phase = 2;
+                            break;
+                        case 2: // 呼气
+                            breathingCircle.style.transition = 'all 6s ease-in-out';
+                            breathingCircle.style.width = '24px';
+                            breathingCircle.style.height = '24px';
+                            breathText.textContent = '呼气';
+                            phase = 3;
+                            break;
+                        case 3: // 屏息
+                            breathText.textContent = '屏息';
+                            phase = 0;
+                            break;
+                    }
+                }, 4000); // 每个阶段持续4秒
+            }
+        });
+
+        // 心情颜色选择
+        moodColorBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const color = btn.getAttribute('data-color');
+                const text = btn.getAttribute('data-text');
+                
+                // 改变颜色圆的颜色
+                moodColor.style.transition = 'all 0.5s ease';
+                moodColor.style.backgroundColor = color;
+                
+                // 显示文字
+                const colorText = document.createElement('div');
+                colorText.className = 'text-sm text-center text-white p-2 rounded';
+                colorText.textContent = text;
+                
+                // 清除之前的文字
+                while (moodColor.firstChild) {
+                    moodColor.removeChild(moodColor.firstChild);
+                }
+                
+                moodColor.appendChild(colorText);
+            });
+        });
+
+        // 添加感恩小事
+        addGratitudeBtn.addEventListener('click', addGratitudeItem);
+        gratitudeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addGratitudeItem();
+            }
+        });
+        
+        function addGratitudeItem() {
+            const text = gratitudeInput.value.trim();
+            if (text) {
+                const li = document.createElement('li');
+                li.className = 'flex items-center opacity-0 transform translate-y-2 transition-all duration-500';
+                li.innerHTML = `<i class="fa fa-check-circle text-accent mr-2"></i> <span>${text}</span>`;
+                
+                gratitudeList.appendChild(li);
+                
+                // 触发动画
+                setTimeout(() => {
+                    li.style.opacity = '1';
+                    li.style.transform = 'translateY(0)';
+                }, 10);
+                
+                // 如果用户已登录，保存到本地
+                if (appState.isLoggedIn()) {
+                    userData.saveGratitude(text);
+                    updateStats();
+                }
+                
+                // 清空输入框
+                gratitudeInput.value = '';
+                showNotification('已添加到感恩列表！');
+            }
+        }
+
+        // 加载用户感恩记录
+        function loadUserGratitudes() {
+            if (!appState.isLoggedIn()) return;
+            
+            const gratitudes = userData.getGratitudes();
+            // 只显示最近3条
+            const recentGratitudes = gratitudes.slice(-3).reverse();
+            
+            // 清空现有列表
+            while (gratitudeList.firstChild) {
+                gratitudeList.removeChild(gratitudeList.firstChild);
+            }
+            
+            // 添加用户的感恩记录
+            recentGratitudes.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'flex items-center opacity-0 transform translate-y-2 transition-all duration-500';
+                li.innerHTML = `<i class="fa fa-check-circle text-accent mr-2"></i> <span>${item.text}</span>`;
+                
+                gratitudeList.appendChild(li);
+                
+                // 触发动画
+                setTimeout(() => {
+                    li.style.opacity = '1';
+                    li.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        }
+
+        // 心情贴纸板
+        stickerBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const stickerHtml = btn.getAttribute('data-html');
+                const sticker = document.createElement('div');
+                sticker.className = 'absolute cursor-move transition-transform hover:scale-110';
+                sticker.innerHTML = stickerHtml;
+                sticker.setAttribute('data-html', stickerHtml);
+                
+                // 随机位置
+                const maxX = stickerBoard.clientWidth - 40;
+                const maxY = stickerBoard.clientHeight - 40;
+                const randomX = Math.floor(Math.random() * maxX);
+                const randomY = Math.floor(Math.random() * maxY);
+                
+                sticker.style.left = `${randomX}px`;
+                sticker.style.top = `${randomY}px`;
+                
+                stickerBoard.appendChild(sticker);
+                
+                // 使贴纸可拖动
+                makeDraggable(sticker, saveStickersToStorage);
+            });
+        });
+
+        // 使元素可拖动
+        function makeDraggable(element, onMoveCallback) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            element.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 获取鼠标初始位置
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                // 当鼠标移动时调用elementDrag函数
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // 计算新的位置
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // 设置元素新的位置
+                const newTop = (element.offsetTop - pos2);
+                const newLeft = (element.offsetLeft - pos1);
+                
+                // 限制在容器内
+                if (newTop >= 0 && newTop <= (stickerBoard.clientHeight - element.offsetHeight)) {
+                    element.style.top = newTop + "px";
+                }
+                if (newLeft >= 0 && newLeft <= (stickerBoard.clientWidth - element.offsetWidth)) {
+                    element.style.left = newLeft + "px";
+                }
+                
+                // 如果有回调函数，调用它
+                if (onMoveCallback && typeof onMoveCallback === 'function') {
+                    onMoveCallback();
+                }
+            }
+            
+            function closeDragElement() {
+                // 停止移动
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        // 保存贴纸到存储
+        function saveStickersToStorage() {
+            if (!appState.isLoggedIn()) return;
+            
+            const stickers = [];
+            document.querySelectorAll('#sticker-board > div:not(#sticker-login-prompt)').forEach(sticker => {
+                stickers.push({
+                    html: sticker.getAttribute('data-html'),
+                    left: sticker.style.left,
+                    top: sticker.style.top
+                });
+            });
+            
+            userData.saveStickers(stickers);
+        }
+
+        // 加载用户贴纸
+        function loadUserStickers() {
+            if (!appState.isLoggedIn()) return;
+            
+            // 清空现有贴纸
+            const existingStickers = document.querySelectorAll('#sticker-board > div:not(#sticker-login-prompt)');
+            existingStickers.forEach(sticker => sticker.remove());
+            
+            const stickers = userData.getStickers();
+            
+            stickers.forEach(stickerData => {
+                const sticker = document.createElement('div');
+                sticker.className = 'absolute cursor-move transition-transform hover:scale-110';
+                sticker.innerHTML = stickerData.html;
+                sticker.setAttribute('data-html', stickerData.html);
+                sticker.style.left = stickerData.left;
+                sticker.style.top = stickerData.top;
+                
+                stickerBoard.appendChild(sticker);
+                
+                // 使贴纸可拖动
+                makeDraggable(sticker, saveStickersToStorage);
+            });
+        }
+
+        // 心情评分选择
+        moodRatings.forEach(rating => {
+            rating.addEventListener('click', () => {
+                // 清除所有选中状态
+                moodRatings.forEach(r => {
+                    r.classList.remove('ring-2', 'ring-offset-2');
+                });
+                
+                // 设置当前选中状态
+                rating.classList.add('ring-2', 'ring-offset-2');
+                rating.classList.add(`ring-${getRatingColor(rating.getAttribute('data-rating'))}`);
+            });
+        });
+        
+        function getRatingColor(rating) {
+            switch(rating) {
+                case '1': return 'red-500';
+                case '2': return 'orange-500';
+                case '3': return 'yellow-500';
+                case '4': return 'green-500';
+                case '5': return 'blue-500';
+                default: return 'gray-500';
+            }
+        }
+
+        // 保存日记
+        saveJournalBtn.addEventListener('click', () => {
+            const entryText = journalEntry.value.trim();
+            const gratitudeText = gratitudeItem.value.trim();
+            const selectedRating = document.querySelector('.mood-rating.ring-2');
+            
+            if (!entryText) {
+                showNotification('请写下今天的心情记录', 'error');
+                return;
+            }
+            
+            // 创建日记对象
+            const journal = {
+                id: Date.now(),
+                date: today.toLocaleDateString('zh-CN'),
+                fullDate: today.toISOString(),
+                mood: selectedRating ? selectedRating.getAttribute('data-rating') : null,
+                entry: entryText,
+                gratitude: gratitudeText
+            };
+            
+            // 保存到本地存储
+            const saved = userData.saveJournal(journal);
+            if (saved) {
+                // 更新日记列表
+                renderJournalEntries();
+                
+                // 如果有感恩内容，同时添加到感恩列表
+                if (gratitudeText) {
+                    userData.saveGratitude(gratitudeText);
+                    addGratitudeItemFromJournal(gratitudeText);
+                }
+                
+                // 更新统计数据
+                updateStats();
+                
+                // 清空表单
+                journalEntry.value = '';
+                gratitudeItem.value = '';
+                moodRatings.forEach(r => {
+                    r.classList.remove('ring-2', 'ring-offset-2');
+                });
+                
+                showNotification('日记保存成功！');
+            } else {
+                showNotification('保存失败，请先登录', 'error');
+            }
+        });
+
+        // 从日记添加感恩项目
+        function addGratitudeItemFromJournal(text) {
+            const li = document.createElement('li');
+            li.className = 'flex items-center opacity-0 transform translate-y-2 transition-all duration-500';
+            li.innerHTML = `<i class="fa fa-check-circle text-accent mr-2"></i> <span>${text}</span>`;
+            
+            gratitudeList.appendChild(li);
+            
+            // 触发动画
+            setTimeout(() => {
+                li.style.opacity = '1';
+                li.style.transform = 'translateY(0)';
+            }, 10);
+        }
+
+        // 渲染日记列表
+        function renderJournalEntries() {
+            const journals = userData.getJournals();
+            
+            // 按日期排序（最新的在前）
+            journals.sort((a, b) => new Date(b.fullDate) - new Date(a.fullDate));
+            
+            // 清空列表
+            journalEntries.innerHTML = '';
+            
+            if (journals.length === 0) {
+                journalEntries.innerHTML = `
+                    <div class="text-center text-gray-500 py-10 bg-white/50 rounded-xl">
+                        还没有记录哦，写下你的第一篇心情日记吧！
+                    </div>
+                `;
+                return;
+            }
+            
+            // 添加日记条目
+            journals.forEach(journal => {
+                const entryEl = document.createElement('div');
+                entryEl.className = 'bg-white rounded-xl shadow-md p-5 transition-all duration-300 hover:shadow-lg';
+                
+                // 心情图标
+                let moodIcon = '';
+                if (journal.mood) {
+                    const icons = ['fa-frown-o', 'fa-meh-o', 'fa-meh-o', 'fa-smile-o', 'fa-grin-alt'];
+                    const colors = ['text-red-500', 'text-orange-500', 'text-yellow-500', 'text-green-500', 'text-blue-500'];
+                    const index = parseInt(journal.mood) - 1;
+                    
+                    moodIcon = `
+                        <div class="flex items-center mb-3">
+                            <i class="fa ${icons[index]} ${colors[index]} mr-2"></i>
+                            <span class="text-sm text-gray-500">${journal.date}</span>
+                        </div>
+                    `;
+                } else {
+                    moodIcon = `
+                        <div class="text-sm text-gray-500 mb-3">${journal.date}</div>
+                    `;
+                }
+                
+                // 感恩内容
+                let gratitudeHtml = '';
+                if (journal.gratitude) {
+                    gratitudeHtml = `
+                        <div class="mt-3 p-3 bg-accent/10 rounded-lg text-sm">
+                            <div class="font-medium text-accent mb-1">我感恩：</div>
+                            <div>${journal.gratitude}</div>
+                        </div>
+                    `;
+                }
+                
+                entryEl.innerHTML = `
+                    ${moodIcon}
+                    <div class="text-gray-700 mb-2">${journal.entry}</div>
+                    ${gratitudeHtml}
+                    <div class="mt-3 flex justify-end">
+                        <button class="delete-journal text-gray-400 hover:text-red-500 transition-colors duration-300" data-id="${journal.id}">
+                            <i class="fa fa-trash-o"></i> 删除
+                        </button>
+                    </div>
+                `;
+                
+                journalEntries.appendChild(entryEl);
+            });
+            
+            // 绑定删除事件
+            document.querySelectorAll('.delete-journal').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.currentTarget.getAttribute('data-id'));
+                    const deleted = userData.deleteJournal(id);
+                    if (deleted) {
+                        renderJournalEntries();
+                        updateStats();
+                        showNotification('日记已删除');
+                    } else {
+                        showNotification('删除失败', 'error');
+                    }
+                });
+            });
+        }
+
+        // 显示通知
+        function showNotification(text, type = 'success') {
+            notificationText.textContent = text;
+            
+            // 设置通知类型样式
+            if (type === 'error') {
+                notification.classList.remove('bg-dark');
+                notification.classList.add('bg-red-500');
+                notification.querySelector('i').className = 'fa fa-exclamation-circle mr-2';
+            } else {
+                notification.classList.remove('bg-red-500');
+                notification.classList.add('bg-dark');
+                notification.querySelector('i').className = 'fa fa-check-circle mr-2';
+            }
+            
+            // 显示通知
+            notification.classList.remove('translate-y-20', 'opacity-0');
+            notification.classList.add('translate-y-0', 'opacity-100');
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                notification.classList.remove('translate-y-0', 'opacity-100');
+                notification.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // 辅助函数：生成随机标题
+        function getRandomTitle() {
+            const titles = [
+                "你做得很好",
+                "相信自己",
+                "不要放弃",
+                "你很坚强",
+                "每天都在进步",
+                "每天都在进步",
+                "你值得被爱",
+                "保持微笑",
+                "小步前进也很好",
+                "你的努力有意义",
+                "给自己点个赞"
+            ];
+            return titles[Math.floor(Math.random() * titles.length)];
+        }
+
+        // 登录/注册相关功能
+        function openAuthModal(type = 'login') {
+            authModal.classList.remove('hidden');
+            setTimeout(() => {
+                authModal.classList.remove('opacity-0');
+                authModal.querySelector('div').classList.remove('scale-95');
+                authModal.querySelector('div').classList.add('scale-100');
+            }, 10);
+            
+            if (type === 'login') {
+                modalTitle.textContent = '登录';
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+            } else {
+                modalTitle.textContent = '注册';
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            }
+        }
+        
+        function closeAuthModal() {
+            authModal.classList.add('opacity-0');
+            authModal.querySelector('div').classList.remove('scale-100');
+            authModal.querySelector('div').classList.add('scale-95');
+            
+            setTimeout(() => {
+                authModal.classList.add('hidden');
+                // 清空表单
+                loginUsernameInput.value = '';
+                loginPasswordInput.value = '';
+                registerUsernameInput.value = '';
+                registerEmailInput.value = '';
+                registerPasswordInput.value = '';
+                registerConfirmInput.value = '';
+            }, 300);
+        }
+        
+        // 切换到注册表单
+        switchToRegisterBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modalTitle.textContent = '注册';
+            loginForm.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        });
+        
+        // 切换到登录表单
+        switchToLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modalTitle.textContent = '登录';
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        });
+        
+        // 关闭模态框
+        closeModalBtn.addEventListener('click', closeAuthModal);
+        
+        // 点击模态框背景关闭
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                closeAuthModal();
+            }
+        });
+        
+        // 打开登录模态框
+        loginBtn.addEventListener('click', () => {
+            openAuthModal('login');
+        });
+        
+        mobileLoginBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            openAuthModal('login');
+        });
+        
+        promptLoginBtn.addEventListener('click', () => {
+            openAuthModal('login');
+        });
+        
+        // 登录处理
+        submitLoginBtn.addEventListener('click', () => {
+            const username = loginUsernameInput.value.trim();
+            const password = loginPasswordInput.value.trim();
+            
+            if (!username || !password) {
+                showNotification('请输入用户名和密码', 'error');
+                return;
+            }
+            
+            // 从本地存储获取用户
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                appState.setUser(user);
+                closeAuthModal();
+                showNotification(`欢迎回来，${user.username}！`);
+            } else {
+                showNotification('用户名或密码错误', 'error');
+            }
+        });
+        
+        // 注册处理
+        submitRegisterBtn.addEventListener('click', () => {
+            const username = registerUsernameInput.value.trim();
+            const email = registerEmailInput.value.trim();
+            const password = registerPasswordInput.value.trim();
+            const confirmPassword = registerConfirmInput.value.trim();
+            
+            // 简单验证
+            if (!username || !email || !password || !confirmPassword) {
+                showNotification('请填写所有字段', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showNotification('两次输入的密码不一致', 'error');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showNotification('密码长度至少为6位', 'error');
+                return;
+            }
+            
+            // 验证邮箱格式
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showNotification('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // 检查用户名是否已存在
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.some(u => u.username === username)) {
+                showNotification('用户名已存在', 'error');
+                return;
+            }
+            
+            // 创建新用户
+            const newUser = {
+                id: Date.now(),
+                username,
+                email,
+                password,
+                joinDate: new Date().toISOString()
+            };
+            
+            // 保存用户
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // 自动登录
+            appState.setUser(newUser);
+            
+            closeAuthModal();
+            showNotification('注册成功，欢迎加入蜜糖心情！');
+        });
+        
+        // 退出登录
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            appState.logout();
+            userDropdown.classList.add('hidden');
+            showNotification('已成功退出登录');
+        });
+        
+        mobileLogoutBtn.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            appState.logout();
+            showNotification('已成功退出登录');
+        });
+        
+        // 用户菜单切换
+        userMenuBtn.addEventListener('click', () => {
+            userDropdown.classList.toggle('hidden');
+        });
+        
+        // 点击其他地方关闭用户菜单
+        document.addEventListener('click', (e) => {
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                userDropdown.classList.add('hidden');
+            }
+        });
+
+        // 个人资料功能
+        function updateProfileView() {
+            if (!appState.isLoggedIn()) return;
+            
+            const user = appState.currentUser;
+            profileUsername.textContent = user.username;
+            profileEmail.textContent = user.email;
+            
+            // 格式化注册日期
+            const joinDate = new Date(user.joinDate);
+            profileJoinDate.textContent = joinDate.toLocaleDateString('zh-CN');
+            
+            // 填充表单
+            profileNewUsername.value = user.username;
+            profileNewEmail.value = user.email;
+        }
+        
+        // 保存个人资料修改
+        saveProfileBtn.addEventListener('click', () => {
+            if (!appState.isLoggedIn()) return;
+            
+            const newUsername = profileNewUsername.value.trim();
+            const newEmail = profileNewEmail.value.trim();
+            const oldPassword = profileOldPassword.value.trim();
+            const newPassword = profileNewPassword.value.trim();
+            
+            // 验证
+            if (!newUsername || !newEmail) {
+                showNotification('用户名和邮箱不能为空', 'error');
+                return;
+            }
+            
+            // 验证邮箱格式
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(newEmail)) {
+                showNotification('请输入有效的邮箱地址', 'error');
+                return;
+            }
+            
+            // 准备更新数据
+            const updateData = {
+                username: newUsername,
+                email: newEmail
+            };
+            
+            // 如果要修改密码
+            if (oldPassword || newPassword) {
+                // 检查原密码是否正确
+                if (oldPassword !== appState.currentUser.password) {
+                    showNotification('当前密码不正确', 'error');
+                    return;
+                }
+                
+                if (newPassword.length < 6) {
+                    showNotification('新密码长度至少为6位', 'error');
+                    return;
+                }
+                
+                updateData.password = newPassword;
+            }
+            
+            // 更新用户信息
+            const updated = userData.updateUser(updateData);
+            if (updated) {
+                // 清空密码字段
+                profileOldPassword.value = '';
+                profileNewPassword.value = '';
+                
+                showNotification('个人资料更新成功');
+                
+                // 更新统计数据
+                updateStats();
+            } else {
+                showNotification('更新失败，请稍后再试', 'error');
+            }
+        });
+        
+        // 更新统计数据
+        function updateStats() {
+            if (!appState.isLoggedIn()) return;
+            
+            const journals = userData.getJournals();
+            const gratitudes = userData.getGratitudes();
+            
+            // 日记总数
+            statsJournals.textContent = journals.length;
+            
+            // 感恩记录总数
+            statsGratitudes.textContent = gratitudes.length;
+            
+            // 计算连续记录天数
+            if (journals.length === 0) {
+                statsStreak.textContent = '0';
+                return;
+            }
+            
+            // 按日期排序
+            const sortedJournals = [...journals].sort((a, b) => new Date(a.fullDate) - new Date(b.fullDate));
+            
+            // 获取所有记录的日期（仅日期部分）
+            const journalDates = new Set();
+            sortedJournals.forEach(journal => {
+                const date = new Date(journal.fullDate);
+                journalDates.add(date.toISOString().split('T')[0]);
+            });
+            
+            // 计算连续天数
+            let currentStreak = 1;
+            let maxStreak = 1;
+            const dateArray = Array.from(journalDates).sort();
+            
+            for (let i = 1; i < dateArray.length; i++) {
+                const prevDate = new Date(dateArray[i-1]);
+                const currDate = new Date(dateArray[i]);
+                
+                // 计算日期差（天）
+                const diffTime = currDate - prevDate;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 1) {
+                    currentStreak++;
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    currentStreak = 1;
+                }
+            }
+            
+            statsStreak.textContent = maxStreak;
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', () => {
+            // 初始化应用状态
+            appState.init();
+            
+            // 显示感恩列表动画
+            setTimeout(() => {
+                document.querySelectorAll('#gratitude-list li').forEach((li, index) => {
+                    setTimeout(() => {
+                        li.style.opacity = '1';
+                        li.style.transform = 'translateY(0)';
+                    }, 100 * index);
+                });
+            }, 500);
+        });
+    </script>
+</body>
+</html>
